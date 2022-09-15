@@ -1,46 +1,98 @@
-# Getting Started with Create React App
+# React - storybooks 導入
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+## nodejs のインストール
 
-## Available Scripts
+開発目的でない場合、node のバージョンは最新版を使えばいいと思います。
 
-In the project directory, you can run:
+実際の開発現場では [nodenv](https://github.com/nodenv/nodenv) などで node のバージョン管理ツールを使ってインストールする方がいいです。
 
-### `npm start`
+なお、本プロジェクトは node v16.10.0 で確認しています。
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+## React アプリの作成
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+筆者は型付言語が好きなので、typescript にて作成しています。
 
-### `npm test`
+```
+$ npx create-react-app storybook-projects --template typescript
+```
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+正常にプロジェクトが作成できたらプロジェクトフォルダに移動します。
 
-### `npm run build`
+```
+$ cd storybook-projects
+```
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+## storybook のインストール
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+```
+$ npx storybook init
+```
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+詳しくは下記を読む。
 
-### `npm run eject`
+https://storybook.js.org/docs/react/get-started/install
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+## storybook を立ち上げる
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+下記で起動すればインストール完了。
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+```
+$ npm run storybook
+```
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+## React プロジェクトを整える
 
-## Learn More
+### tsconfig 設定
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+{project_dir}/tsconfig.json の compilerOptions 要素直下に下記を追加。
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+```
+    "baseUrl": "./",
+    "paths": {
+      "@atoms/*": ["src/components/atoms", "src/components/atoms/*"],
+      "@molecules/*": ["src/components/molecules", "src/components/molecules/*"],
+      "@organisms/*": ["src/components/organisms", "src/components/organisms/*"],
+    },
+```
+
+{project_dir}/tsconfig.json の中身にある `"isolatedModules": true,` の部分を下記に変更。
+
+(tsx ファイルの root 要素に type 宣言したいため)
+
+```
+    "isolatedModules": false,
+```
+
+### アトミックデザインを採用したフォルダ構造を作成
+
+下記のフォルダを {project_dir}/src 直下に作成する。
+
+- components
+  - atoms
+  - molecules
+  - organisms
+
+Atomic デザインについてはこちら。
+
+https://bradfrost.com/blog/post/atomic-web-design/
+
+### storybook フォルダ構造を作成
+
+stories/ 以下を全て削除する。
+
+```
+$ rm -r src/stories/*
+```
+
+下記のフォルダを src/stories 直下に作成する。
+
+### styled-component を導入
+
+css もコンポーネント指向に組み込んで作りたいため。
+
+```
+$ npm install --save styled-components
+$ npm install --save-dev @types/styled-components tsconfig-paths-webpack-plugin
+```
+
+## component を作成する
